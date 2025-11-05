@@ -6,12 +6,11 @@ import {
   Navigate,
   useNavigate,
 } from "react-router-dom";
-import ChatWindow from "./components/ChatWindow";
-import Sidebar from "./components/Sidebar";
 import SignupScreen from "./pages/SignupScreen";
 import LoginScreen from "./pages/LoginPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
+import MainChatWindow from "./pages/mainChatWindow";
 
 export default function App() {
   const [userData, setUserData] = useState(null);
@@ -47,7 +46,7 @@ function AppRoutes({ userData, setUserData }) {
           element={
             userData ? (
               <ProtectedRoute>
-                <ChatWindow />
+                <MainChatWindow />
               </ProtectedRoute>
             ) : (
               <Navigate to="/login" />

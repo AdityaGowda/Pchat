@@ -1,7 +1,10 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 import { Link } from "react-router-dom";
+import { doc, serverTimestamp, setDoc } from "firebase/firestore";
+import { ref, set, onDisconnect } from "firebase/database";
+import { rtdb } from "../firebase";
 
 export default function LoginScreen({ setUserData }) {
   const [email, setEmail] = useState("");
@@ -18,12 +21,34 @@ export default function LoginScreen({ setUserData }) {
       );
       console.log("Logged in with email:", userCredential.user);
       alert(`Welcome ${userCredential.user.email}`);
+      setUserStatus(userCredential.user);
       setUserData(userCredential.user);
     } catch (error) {
       console.error(error.message);
       alert(error.message);
     }
   };
+
+  function setUserStatus(user) {
+    async (user) => {
+      await setDoc(
+        doc(db, "users", user.uid),
+        {
+          name: user.displayName || "No Name",
+          email: user.email,
+          createdAt: Date.now(),
+        },
+        { merge: true }
+      );
+
+      // 2️⃣ Realtime DB → set online status
+      const statusRef = ref(rtdb, `status/${user.uid}`);
+      set(statusRef, { online: true });
+
+      // Automatically set offline when user disconnects
+      onDisconnect(statusRef).set({ online: false, lastSeen: Date.now() });
+    };
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 w-full">

@@ -1,6 +1,15 @@
 import { useState } from "react";
-import { auth, provider } from "../firebase";
+import { auth, provider, db } from "../firebase";
 import { Link } from "react-router-dom";
+import { doc, setDoc } from "firebase/firestore";
+import {
+  ref,
+  set,
+  onDisconnect,
+  get,
+  serverTimestamp,
+} from "firebase/database";
+import { rtdb } from "../firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithPopup,
@@ -12,16 +21,23 @@ export default function SignupScreen({ setUserData }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  function handleSignUp() {
-    signInWithPopup(auth, provider)
-      .then((result) => {
-        setUserData(result.user);
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
+  async function handleSignUp() {
+    try {
+      // 1️⃣ Sign in with Google popup
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
 
+      // 2️⃣ Create or update user profile in Firestore
+      await createUserProfile(user);
+
+      // 3️⃣ Save user data in your app state
+      setUserData(user);
+
+      console.log("Signup successful:", user);
+    } catch (error) {
+      console.error("Error during signup:", error);
+    }
+  }
   // 🔹 Email + Password login
   const handleCreateUserWithEmailAndPassword = async (e) => {
     e.preventDefault();
@@ -34,7 +50,7 @@ export default function SignupScreen({ setUserData }) {
       await updateProfile(userCredential.user, {
         displayName: name,
       });
-
+      await createUserProfile(userCredential.user);
       console.log("Logged in with email:", userCredential.user);
       alert(`Welcome ${userCredential.user.email}`);
     } catch (error) {
@@ -42,6 +58,31 @@ export default function SignupScreen({ setUserData }) {
       alert(error.message);
     }
   };
+
+  async function createUserProfile(user) {
+    await setDoc(
+      doc(db, "users", user.uid),
+      {
+        displayName: user.displayName,
+        email: user.email,
+        photoURL: user.photoURL,
+        lastSeen: Date.now(),
+      },
+      { merge: true }
+    );
+
+    // 2️⃣ Realtime DB → set online status
+    const statusRef = ref(rtdb, `status/${user.uid}`);
+    set(statusRef, { online: true });
+    const snapshot = await get(statusRef);
+    if (snapshot.exists()) {
+      console.log("Status:", snapshot.val());
+    } else {
+      console.log("No status found");
+    }
+    // Automatically set offline when user disconnects
+    onDisconnect(statusRef).set({ online: false, lastSeen: Date.now() });
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 w-full">

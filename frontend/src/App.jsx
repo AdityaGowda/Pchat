@@ -14,22 +14,16 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 
 export default function App() {
-  const [activeChat, setActiveChat] = useState(null);
   const [userData, setUserData] = useState(null);
 
   return (
     <Router>
-      <AppRoutes
-        userData={userData}
-        setUserData={setUserData}
-        activeChat={activeChat}
-        setActiveChat={setActiveChat}
-      />
+      <AppRoutes userData={userData} setUserData={setUserData} />
     </Router>
   );
 }
 
-function AppRoutes({ userData, setUserData, activeChat, setActiveChat }) {
+function AppRoutes({ userData, setUserData }) {
   const navigate = useNavigate();
   useEffect(() => {
     if (userData) {
@@ -53,14 +47,7 @@ function AppRoutes({ userData, setUserData, activeChat, setActiveChat }) {
           element={
             userData ? (
               <ProtectedRoute>
-                <div className="flex w-full h-full">
-                  <div className="w-1/4 min-w-[250px] border-r border-gray-200 shadow-sm">
-                    <Sidebar setActiveChat={setActiveChat} />
-                  </div>
-                  <main className="flex-1 flex flex-col">
-                    <ChatWindow activeChat={activeChat} />
-                  </main>
-                </div>
+                <ChatWindow />
               </ProtectedRoute>
             ) : (
               <Navigate to="/login" />

@@ -1,19 +1,35 @@
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
+import { auth } from "../firebase";
+import { Link } from "react-router-dom";
 
-export default function LoginScreen({ onLogin }) {
+export default function LoginScreen({ setUserData }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const handleSubmit = (e) => {
+  // 🔹 Email + Password login
+  const handleEmailLogin = async (e) => {
     e.preventDefault();
-    onLogin({ email, password });
+    try {
+      const userCredential = await signInWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      console.log("Logged in with email:", userCredential.user);
+      alert(`Welcome ${userCredential.user.email}`);
+      setUserData(userCredential.user);
+    } catch (error) {
+      console.error(error.message);
+      alert(error.message);
+    }
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100">
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 w-full">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-md">
         <h2 className="text-2xl font-bold text-center text-gray-800">Login</h2>
-        <form className="space-y-4" onSubmit={handleSubmit}>
+        <form className="space-y-4" onSubmit={handleEmailLogin}>
           <input
             type="email"
             placeholder="Email"
@@ -39,7 +55,9 @@ export default function LoginScreen({ onLogin }) {
         </form>
         <p className="text-sm text-center text-gray-600">
           Don't have an account?{" "}
-          <span className="text-blue-500 cursor-pointer">Sign Up</span>
+          <Link to="/signup" className="text-blue-600 hover:underline">
+            Sign Up
+          </Link>
         </p>
       </div>
     </div>

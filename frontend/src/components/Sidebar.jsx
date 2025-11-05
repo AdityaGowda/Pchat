@@ -7,7 +7,7 @@ const chats = [
 
 export default function Sidebar({ setActiveChat }) {
   return (
-    <div className="flex flex-col w-full h-full">
+    <div className="flex flex-col h-full">
       {/* Header */}
       <div className="p-4 border-b bg-gradient-to-r from-blue-600 to-indigo-500 text-white font-bold text-xl shadow-sm">
         PChat 💬

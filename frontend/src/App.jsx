@@ -44,13 +44,9 @@ function AppRoutes({ userData, setUserData }) {
         <Route
           path="/chat"
           element={
-            userData ? (
-              <ProtectedRoute>
-                <MainChatWindow />
-              </ProtectedRoute>
-            ) : (
-              <Navigate to="/login" />
-            )
+            <ProtectedRoute>
+              <MainChatWindow />
+            </ProtectedRoute>
           }
         />
         <Route path="*" element={<Navigate to="/login" />} />

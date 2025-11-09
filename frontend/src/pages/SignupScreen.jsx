@@ -73,15 +73,14 @@ export default function SignupScreen({ setUserData }) {
 
     // 2️⃣ Realtime DB → set online status
     const statusRef = ref(rtdb, `status/${user.uid}`);
-    set(statusRef, { online: true });
+    set(statusRef, { online: true, name: user.displayName, uid: user.uid });
     const snapshot = await get(statusRef);
     if (snapshot.exists()) {
       console.log("Status:", snapshot.val());
     } else {
       console.log("No status found");
     }
-    // Automatically set offline when user disconnects
-    onDisconnect(statusRef).set({ online: false, lastSeen: Date.now() });
+    onDisconnect(statusRef).update({ online: false });
   }
 
   return (

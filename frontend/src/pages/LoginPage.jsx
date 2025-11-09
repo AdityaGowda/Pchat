@@ -1,9 +1,8 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { auth, db } from "../firebase";
+import { auth } from "../firebase";
 import { Link } from "react-router-dom";
-import { doc, serverTimestamp, setDoc } from "firebase/firestore";
-import { ref, set, onDisconnect } from "firebase/database";
+import { ref, set, update, get, onDisconnect } from "firebase/database";
 import { rtdb } from "../firebase";
 
 export default function LoginScreen({ setUserData }) {
@@ -29,27 +28,34 @@ export default function LoginScreen({ setUserData }) {
     }
   };
 
-  function setUserStatus(user) {
-    async (user) => {
-      await setDoc(
-        doc(db, "users", user.uid),
-        {
-          name: user.displayName || "No Name",
-          email: user.email,
-          createdAt: Date.now(),
-        },
-        { merge: true }
-      );
+  async function setUserStatus(user) {
+    if (!user?.uid) return;
+    const statusRef = ref(rtdb, `status/${user.uid}`);
 
-      // 2️⃣ Realtime DB → set online status
-      const statusRef = ref(rtdb, `status/${user.uid}`);
-      set(statusRef, { online: true });
+    try {
+      // Check if user status exists
+      const snapshot = await get(statusRef);
 
-      // Automatically set offline when user disconnects
-      onDisconnect(statusRef).set({ online: false, lastSeen: Date.now() });
-    };
+      if (snapshot.exists()) {
+        // Update existing user status
+        await update(statusRef, { online: true });
+      } else {
+        // Create new user status
+        await set(statusRef, {
+          online: true,
+          name: user.displayName || "Anonymous",
+          uid: user.uid,
+        });
+      }
+
+      // Automatically mark offline when user disconnects
+      onDisconnect(statusRef).update({
+        online: false,
+      });
+    } catch (error) {
+      console.error("Error setting user status:", error);
+    }
   }
-
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 w-full">
       <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-md">

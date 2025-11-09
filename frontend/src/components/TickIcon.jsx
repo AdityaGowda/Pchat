@@ -2,7 +2,6 @@ export default function TickIcon({ status = "sent" }) {
   /**
    * status: "sent" | "delivered" | "read"
    */
-
   switch (status) {
     case "sent":
       // Circle only

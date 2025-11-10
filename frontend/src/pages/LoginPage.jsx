@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { ref, set, update, get, onDisconnect } from "firebase/database";
 import { rtdb } from "../firebase";
 
-export default function LoginScreen({ setUserData }) {
+export default function LoginScreen({ setUserLoginStatus }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -18,10 +18,9 @@ export default function LoginScreen({ setUserData }) {
         email,
         password
       );
-      console.log("Logged in with email:", userCredential.user);
       alert(`Welcome ${userCredential.user.email}`);
       setUserStatus(userCredential.user);
-      setUserData(userCredential.user);
+      setUserLoginStatus(true);
     } catch (error) {
       console.error(error.message);
       alert(error.message);

@@ -1,7 +1,7 @@
 // Sidebar.jsx
 import { useEffect, useState } from "react";
 import { ref, onValue } from "firebase/database";
-import { rtdb } from "../firebase"; // your firebase.js export
+import { auth, rtdb } from "../firebase"; // your firebase.js export
 
 export default function Sidebar({ activeChatId, setActiveChatId }) {
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -13,15 +13,16 @@ export default function Sidebar({ activeChatId, setActiveChatId }) {
     // onValue() = real-time listener
     const unsubscribe = onValue(statusRef, (snapshot) => {
       const data = snapshot.val();
-      console.log("Status data:", data);
       if (!data) {
-        setOnlineUsers([]); // no users online
+        setOnlineUsers([]);
         return;
       }
 
       // Filter only users who are online = true
       const onlineList = Object.keys(data)
-        .filter((uid) => data[uid].online === true)
+        .filter(
+          (uid) => data[uid].online === true && uid !== auth.currentUser.uid
+        )
         .map((uid) => ({
           uid,
           name: data[uid].name || "Unknown",
@@ -35,7 +36,6 @@ export default function Sidebar({ activeChatId, setActiveChatId }) {
     return () => unsubscribe();
   }, []);
 
-  console.log(onlineUsers);
   return (
     <div className="flex flex-col h-full">
       {/* Header */}

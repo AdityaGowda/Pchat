@@ -8,48 +8,64 @@ import {
 } from "react-router-dom";
 import SignupScreen from "./pages/SignupScreen";
 import LoginScreen from "./pages/LoginPage";
-import ProtectedRoute from "./components/ProtectedRoute";
 import "./App.css";
 import MainChatWindow from "./pages/mainChatWindow";
+import AuthRoute from "./components/AuthRoute";
+import { AuthProvider } from "./components/AuthContext";
 
 export default function App() {
-  const [userData, setUserData] = useState(null);
-
   return (
-    <Router>
-      <AppRoutes userData={userData} setUserData={setUserData} />
-    </Router>
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
   );
 }
 
-function AppRoutes({ userData, setUserData }) {
+function AppRoutes() {
+  const [userLoginStatus, setUserLoginStatus] = useState(false);
   const navigate = useNavigate();
   useEffect(() => {
-    if (userData) {
+    if (userLoginStatus) {
       navigate("/chat");
     }
-  }, [userData, navigate]);
-
+  });
   return (
     <div className="flex h-screen w-full overflow-hidden font-sans bg-gradient-to-br from-blue-50 to-gray-100">
       <Routes>
         <Route
           path="/signup"
-          element={<SignupScreen setUserData={setUserData} />}
+          element={
+            <AuthRoute type="public">
+              <SignupScreen setUserLoginStatus={setUserLoginStatus} />
+            </AuthRoute>
+          }
         />
         <Route
           path="/login"
-          element={<LoginScreen setUserData={setUserData} />}
+          element={
+            <AuthRoute type="public">
+              <LoginScreen setUserLoginStatus={setUserLoginStatus} />
+            </AuthRoute>
+          }
         />
         <Route
           path="/chat"
           element={
-            <ProtectedRoute>
+            <AuthRoute type="protected">
               <MainChatWindow />
-            </ProtectedRoute>
+            </AuthRoute>
           }
         />
-        <Route path="*" element={<Navigate to="/login" />} />
+        <Route
+          path="*"
+          element={
+            <AuthRoute type="public">
+              <Navigate to="/login" />
+            </AuthRoute>
+          }
+        />
       </Routes>
     </div>
   );

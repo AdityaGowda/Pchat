@@ -2,6 +2,8 @@ export default function TickIcon({ status = "sent" }) {
   /**
    * status: "sent" | "delivered" | "read"
    */
+
+  console.log(status, ":::::::::::::::::::::::::::::");
   switch (status) {
     case "sent":
       // Circle only
@@ -15,7 +17,7 @@ export default function TickIcon({ status = "sent" }) {
         <span className="w-3 h-3 bg-blue-400 text-blue-500 rounded-full inline-block ml-1" />
       );
 
-    case "read":
+    case "seen":
       // Filled tick
       return (
         <svg

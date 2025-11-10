@@ -2,13 +2,7 @@ import { useState } from "react";
 import { auth, provider, db } from "../firebase";
 import { Link } from "react-router-dom";
 import { doc, setDoc } from "firebase/firestore";
-import {
-  ref,
-  set,
-  onDisconnect,
-  get,
-  serverTimestamp,
-} from "firebase/database";
+import { ref, set, get } from "firebase/database";
 import { rtdb } from "../firebase";
 import {
   createUserWithEmailAndPassword,
@@ -16,7 +10,7 @@ import {
   updateProfile,
 } from "firebase/auth";
 
-export default function SignupScreen({ setUserData }) {
+export default function SignupScreen({ setUserLoginStatus }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -31,7 +25,7 @@ export default function SignupScreen({ setUserData }) {
       await createUserProfile(user);
 
       // 3️⃣ Save user data in your app state
-      setUserData(user);
+      setUserLoginStatus(true);
 
       console.log("Signup successful:", user);
     } catch (error) {
@@ -74,13 +68,6 @@ export default function SignupScreen({ setUserData }) {
     // 2️⃣ Realtime DB → set online status
     const statusRef = ref(rtdb, `status/${user.uid}`);
     set(statusRef, { online: true, name: user.displayName, uid: user.uid });
-    const snapshot = await get(statusRef);
-    if (snapshot.exists()) {
-      console.log("Status:", snapshot.val());
-    } else {
-      console.log("No status found");
-    }
-    onDisconnect(statusRef).update({ online: false });
   }
 
   return (

@@ -21,7 +21,6 @@ export default function ChatWindow({ activeChatId, setActiveChatId }) {
   const [typingStatus, setTypingStatus] = useState(false);
 
   const currentUser = auth.currentUser;
-  console.log("Current User in ChatWindow:", currentUser);
   const conversationId =
     currentUser && activeChatId
       ? [currentUser.uid, activeChatId].sort().join("_")

@@ -1,9 +1,16 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import ChatWindow from "../components/ChatWindow";
 import Sidebar from "../components/Sidebar";
+import { useAuth } from "../components/AuthContext";
+import useHandleUserOnlineStatus from "../hooks/HandleUserOnlineStatus";
 
 export default function MainChatWindow() {
   const [activeChatId, setActiveChatId] = useState(null);
+  const { currentUser, loading } = useAuth();
+
+  // ✅ Track Online Status
+  useHandleUserOnlineStatus(currentUser.uid);
+
   return (
     <div className="flex w-full h-full">
       <div className="w-1/4 min-w-[250px] border-r border-gray-200 shadow-sm">

@@ -12,6 +12,7 @@ import "./App.css";
 import MainChatWindow from "./pages/mainChatWindow";
 import AuthRoute from "./components/AuthRoute";
 import { AuthProvider } from "./components/AuthContext";
+import LogoutPage from "./pages/logoutPage";
 
 export default function App() {
   return (
@@ -58,6 +59,7 @@ function AppRoutes() {
             </AuthRoute>
           }
         />
+        <Route path="/logout" element={<LogoutPage navigation={navigate} />} />
         <Route
           path="*"
           element={

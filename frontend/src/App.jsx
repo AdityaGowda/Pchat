@@ -13,12 +13,26 @@ import MainChatWindow from "./pages/mainChatWindow";
 import AuthRoute from "./components/AuthRoute";
 import { AuthProvider } from "./components/AuthContext";
 import LogoutPage from "./pages/logoutPage";
+import { Toaster } from "react-hot-toast";
 
 export default function App() {
   return (
     <AuthProvider>
       <Router>
         <AppRoutes />
+        <Toaster
+          position="top-center"
+          reverseOrder={false}
+          toastOptions={{
+            duration: 3000,
+            style: {
+              background: "white",
+              color: "black",
+              borderRadius: "10px",
+              padding: "12px 16px",
+            },
+          }}
+        />
       </Router>
     </AuthProvider>
   );

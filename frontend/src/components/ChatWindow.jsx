@@ -11,16 +11,20 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { ref, set, onValue } from "firebase/database";
-import { db, rtdb, auth } from "../firebase";
+import { db, rtdb } from "../firebase";
 import TickIcon from "../components/TickIcon";
+import { useAuth } from "./AuthContext";
 
 export default function ChatWindow({ activeChatId, setActiveChatId }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const [chatUser, setChatUser] = useState(null);
   const [typingStatus, setTypingStatus] = useState(false);
+  const { currentUser } = useAuth();
 
-  const currentUser = auth.currentUser;
+  if (activeChatId === null) {
+    return <DefaultChatWindow />;
+  }
   const conversationId =
     currentUser && activeChatId
       ? [currentUser.uid, activeChatId].sort().join("_")
@@ -109,12 +113,7 @@ export default function ChatWindow({ activeChatId, setActiveChatId }) {
   };
 
   if (!activeChatId) {
-    return (
-      <div className="flex-1 flex flex-col items-center justify-center text-gray-500 space-y-2">
-        <p className="text-2xl font-semibold">Pchat 💬</p>
-        <p>Select a chat to start messaging</p>
-      </div>
-    );
+    return <DefaultChatWindow />;
   }
 
   return (
@@ -206,6 +205,15 @@ export default function ChatWindow({ activeChatId, setActiveChatId }) {
           Send
         </button>
       </div>
+    </div>
+  );
+}
+
+function DefaultChatWindow() {
+  return (
+    <div className="flex-1 flex flex-col items-center justify-center text-gray-500 space-y-2">
+      <p className="text-2xl font-semibold">Pchat 💬</p>
+      <p>Select a chat to start messaging</p>
     </div>
   );
 }

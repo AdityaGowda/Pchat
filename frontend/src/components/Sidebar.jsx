@@ -1,10 +1,11 @@
 // Sidebar.jsx
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import { ref, onValue } from "firebase/database";
 import { auth, rtdb } from "../firebase"; // your firebase.js export
 
 export default function Sidebar({ activeChatId, setActiveChatId }) {
   const [onlineUsers, setOnlineUsers] = useState([]);
+  const { currentUser } = useAuth();
 
   // 👇 Listen to all online users in Realtime DB
   useEffect(() => {
@@ -28,7 +29,9 @@ export default function Sidebar({ activeChatId, setActiveChatId }) {
           name: data[uid].name || "Unknown",
           online: true,
         }));
-
+      if (!data[activeChatId]) {
+        setActiveChatId(null);
+      }
       setOnlineUsers(onlineList);
     });
 

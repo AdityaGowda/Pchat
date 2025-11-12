@@ -1,45 +1,39 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { auth } from "../firebase";
+import { auth, rtdb } from "../firebase";
 import { Link } from "react-router-dom";
 import { ref, set, update, get, onDisconnect } from "firebase/database";
-import { rtdb } from "../firebase";
+import { motion } from "framer-motion";
+import toast from "react-hot-toast";
 
 export default function LoginScreen({ setUserLoginStatus }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   // 🔹 Email + Password login
+
   const handleEmailLogin = async (e) => {
     e.preventDefault();
-    try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      alert(`Welcome ${userCredential.user.email}`);
-      setUserStatus(userCredential.user);
-      setUserLoginStatus(true);
-    } catch (error) {
-      console.error(error.message);
-      alert(error.message);
-    }
+    toast.promise(signInWithEmailAndPassword(auth, email, password), {
+      loading: "Logging in...",
+      success: (userCredential) => {
+        setUserStatus(userCredential.user);
+        setTimeout(() => setUserLoginStatus(true), 1000);
+        return `Welcome ${userCredential.user.email}`;
+      },
+      error: (err) => err.message,
+    });
   };
-
   async function setUserStatus(user) {
     if (!user?.uid) return;
     const statusRef = ref(rtdb, `status/${user.uid}`);
 
     try {
-      // Check if user status exists
       const snapshot = await get(statusRef);
 
       if (snapshot.exists()) {
-        // Update existing user status
         await update(statusRef, { online: true });
       } else {
-        // Create new user status
         await set(statusRef, {
           online: true,
           name: user.displayName || "Anonymous",
@@ -47,20 +41,39 @@ export default function LoginScreen({ setUserLoginStatus }) {
         });
       }
 
-      // Automatically mark offline when user disconnects
-      onDisconnect(statusRef).update({
-        online: false,
-      });
+      onDisconnect(statusRef).update({ online: false });
     } catch (error) {
       console.error("Error setting user status:", error);
     }
   }
+
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-100 w-full">
-      <div className="w-full max-w-md p-8 space-y-6 bg-white rounded-xl shadow-md">
-        <h2 className="text-2xl font-bold text-center text-gray-800">Login</h2>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.6 }}
+      className="flex items-center justify-center min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 w-full"
+    >
+      {/* Card */}
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ type: "spring", stiffness: 80, damping: 15 }}
+        className="w-full max-w-md p-8 space-y-6 bg-white rounded-2xl shadow-lg"
+      >
+        <motion.h2
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ delay: 0.1 }}
+          className="text-2xl font-bold text-center text-gray-800"
+        >
+          Login
+        </motion.h2>
+
         <form className="space-y-4" onSubmit={handleEmailLogin}>
-          <input
+          <motion.input
+            whileFocus={{ scale: 1.02 }}
             type="email"
             placeholder="Email"
             value={email}
@@ -68,7 +81,8 @@ export default function LoginScreen({ setUserLoginStatus }) {
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-          <input
+          <motion.input
+            whileFocus={{ scale: 1.02 }}
             type="password"
             placeholder="Password"
             value={password}
@@ -76,20 +90,28 @@ export default function LoginScreen({ setUserLoginStatus }) {
             className="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             required
           />
-          <button
+          <motion.button
+            whileHover={{ scale: 1.03 }}
+            whileTap={{ scale: 0.97 }}
             type="submit"
             className="w-full py-2 font-bold text-white bg-blue-500 rounded-md hover:bg-blue-600 transition"
           >
             Login
-          </button>
+          </motion.button>
         </form>
-        <p className="text-sm text-center text-gray-600">
+
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-sm text-center text-gray-600"
+        >
           Don't have an account?{" "}
           <Link to="/signup" className="text-blue-600 hover:underline">
             Sign Up
           </Link>
-        </p>
-      </div>
-    </div>
+        </motion.p>
+      </motion.div>
+    </motion.div>
   );
 }

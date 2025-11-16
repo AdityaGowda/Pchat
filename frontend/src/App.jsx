@@ -14,6 +14,7 @@ import AuthRoute from "./components/AuthRoute";
 import { AuthProvider } from "./components/AuthContext";
 import LogoutPage from "./pages/logoutPage";
 import { Toaster } from "react-hot-toast";
+import AuthScreenLeftPannel from "./components/authScrrenLeftPannel";
 
 export default function App() {
   return (
@@ -47,13 +48,15 @@ function AppRoutes() {
     }
   });
   return (
-    <div className="flex h-screen w-full overflow-hidden font-sans bg-gradient-to-br from-blue-50 to-gray-100">
+    <div className="App">
       <Routes>
         <Route
           path="/signup"
           element={
             <AuthRoute type="public">
-              <SignupScreen setUserLoginStatus={setUserLoginStatus} />
+              <AuthScreenLeftPannel>
+                <SignupScreen setUserLoginStatus={setUserLoginStatus} />
+              </AuthScreenLeftPannel>
             </AuthRoute>
           }
         />
@@ -61,7 +64,9 @@ function AppRoutes() {
           path="/login"
           element={
             <AuthRoute type="public">
-              <LoginScreen setUserLoginStatus={setUserLoginStatus} />
+              <AuthScreenLeftPannel>
+                <LoginScreen setUserLoginStatus={setUserLoginStatus} />
+              </AuthScreenLeftPannel>
             </AuthRoute>
           }
         />

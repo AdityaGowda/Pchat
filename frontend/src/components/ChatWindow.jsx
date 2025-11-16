@@ -21,10 +21,6 @@ export default function ChatWindow({ activeChatId, setActiveChatId }) {
   const [chatUser, setChatUser] = useState(null);
   const [typingStatus, setTypingStatus] = useState(false);
   const { currentUser } = useAuth();
-
-  if (activeChatId === null) {
-    return <DefaultChatWindow />;
-  }
   const conversationId =
     currentUser && activeChatId
       ? [currentUser.uid, activeChatId].sort().join("_")
@@ -75,6 +71,7 @@ export default function ChatWindow({ activeChatId, setActiveChatId }) {
     if (!conversationId || !activeChatId) return;
     const typingRef = ref(rtdb, `typing/${conversationId}/${activeChatId}`);
     const unsubscribe = onValue(typingRef, (snap) => {
+      console.log("Typing status updated:", snap.val());
       setTypingStatus(snap.val()?.isTyping || false);
     });
     return () => unsubscribe();
@@ -89,6 +86,7 @@ export default function ChatWindow({ activeChatId, setActiveChatId }) {
         rtdb,
         `typing/${conversationId}/${currentUser.uid}`
       );
+      console.log("Updating typing status:", e.target.value.length > 0);
       set(typingRef, { isTyping: e.target.value.length > 0 });
     }
   };
@@ -117,17 +115,23 @@ export default function ChatWindow({ activeChatId, setActiveChatId }) {
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full md:flex-1">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 bg-gradient-to-r from-blue-600 to-indigo-500 text-white">
+      <div
+        className="flex items-center gap-3 p-2.5 border-b border-gray-200 
+                  bg-gradient-to-r from-indigo-600 to-purple-600 text-white"
+      >
+        {/* Mobile Back Button */}
         <button
           onClick={() => setActiveChatId(null)}
-          className="md:hidden px-3 py-1 text-sm bg-white/20 backdrop-blur-md text-white rounded-lg shadow-sm hover:bg-white/30"
+          className="md:hidden text-2xl px-2 py-1 bg-white/20 backdrop-blur-md 
+                 text-white rounded-lg shadow-sm hover:bg-white/30"
         >
-          ← Back
+          &lt;
         </button>
 
-        <div className="flex items-center gap-3">
+        {/* User Profile */}
+        <div className="flex items-center gap-3 flex-1">
           {chatUser?.photoURL ? (
             <img
               src={chatUser.photoURL}
@@ -135,21 +139,23 @@ export default function ChatWindow({ activeChatId, setActiveChatId }) {
               className="w-10 h-10 rounded-full border border-white/40"
             />
           ) : (
-            <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white font-semibold">
+            <div
+              className="w-10 h-10 rounded-full bg-white/20 flex items-center 
+                        justify-center text-white font-semibold"
+            >
               {chatUser?.displayName?.[0] || "?"}
             </div>
           )}
+
           <div>
             <div className="font-semibold text-lg">
               {chatUser?.displayName || "Unknown User"}
             </div>
-            <div className="text-sm text-white/80">
-              {chatUser?.online ? "🟢 Online" : "⚪ Offline"}
-            </div>
           </div>
         </div>
 
-        <div />
+        {/* Place-holder for alignment on desktop */}
+        <div className="hidden md:block w-8"></div>
       </div>
 
       {/* Messages Section */}
@@ -162,16 +168,15 @@ export default function ChatWindow({ activeChatId, setActiveChatId }) {
             }`}
           >
             <div
-              className={`p-3 rounded-2xl shadow-sm max-w-xs ${
+              className={`pt-2 pl-5 pr-5 pb-2 rounded-2xl shadow-sm max-w-xs ${
                 msg.senderId === currentUser.uid
-                  ? "bg-gradient-to-r from-blue-500 to-indigo-500 text-white"
-                  : "bg-gray-200 text-gray-800"
+                  ? "bg-gradient-to-r from-blue-600 to-indigo-500 text-white border-white/20"
+                  : "bg-white text-gray-800 border-gray-200"
               }`}
             >
               {msg.text}
             </div>
 
-            {/* ✅ Show status only for sender */}
             {msg.senderId === currentUser.uid && (
               <TickIcon status={msg.status || "sent"} />
             )}
@@ -180,7 +185,7 @@ export default function ChatWindow({ activeChatId, setActiveChatId }) {
 
         {/* Typing Indicator */}
         {typingStatus && (
-          <div className="flex items-center space-x-2 text-gray-500 text-sm">
+          <div className="flex items-center gap-2 text-gray-500 text-sm">
             <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></span>
             <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-150"></span>
             <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce delay-300"></span>
@@ -195,12 +200,14 @@ export default function ChatWindow({ activeChatId, setActiveChatId }) {
           type="text"
           placeholder="Type a message..."
           value={message}
-          onChange={handleInput}
-          className="flex-1 px-4 py-2 border rounded-full focus:outline-none focus:ring-2 focus:ring-blue-400 shadow-sm"
+          onChange={(e) => handleInput(e)}
+          className="flex-1 px-4 py-2 border rounded-full focus:outline-none 
+                 focus:ring-2 focus:ring-blue-400 shadow-sm"
         />
         <button
-          onClick={sendMessage}
-          className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-500 text-white rounded-full shadow hover:opacity-90"
+          onClick={(e) => sendMessage(e)}
+          className="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-500 
+                 text-white rounded-full shadow hover:opacity-90"
         >
           Send
         </button>
@@ -211,9 +218,15 @@ export default function ChatWindow({ activeChatId, setActiveChatId }) {
 
 function DefaultChatWindow() {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center text-gray-500 space-y-2">
-      <p className="text-2xl font-semibold">Pchat 💬</p>
-      <p>Select a chat to start messaging</p>
+    <div className="flex-1 flex flex-col items-center justify-center text-gray-500 space-y-2 px-4 text-center">
+      <p className="text-3xl font-bold">PChat</p>{" "}
+      <p className="text-lg">Start chatting with any online public user.</p>{" "}
+      <p className="text-sm opacity-70">
+        Select a user from the online list to begin a private real-time chat.{" "}
+      </p>
+      <p className="text-sm opacity-70">
+        Your conversation stays active only while both users remain online.{" "}
+      </p>
     </div>
   );
 }

@@ -7,12 +7,10 @@
 ![Responsive](https://img.shields.io/badge/Responsive-Yes-brightgreen?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Project-Ongoing-yellow?style=for-the-badge)
 
----
 
 ## 🚀 Live Demo  
 🔗 **PChat App:** https://pchat-747ef.web.app/
 
----
 
 ## 🌐 About PChat  
 **PChat** is a real-time global chat platform where users can instantly talk to anyone who is online.  
@@ -22,7 +20,6 @@ Just **instant, temporary, real-time private messaging**.
 
 Chats stay alive **only while both users are online** — once someone disconnects, the private chat disappears automatically.
 
----
 
 ## ⭐ Key Features
 
@@ -50,7 +47,6 @@ Chats stay alive **only while both users are online** — once someone disconnec
 - Optimized for **mobile**, **tablet**, and **desktop**
 - Smooth UI and consistent layout across all screen sizes
 
----
 
 ## 🧑‍💻 Tech Stack
 
@@ -71,7 +67,6 @@ Chats stay alive **only while both users are online** — once someone disconnec
 - Instant private messaging via Firestore  
 - Auto cleanup logic handled by Firebase events  
 
----
 ## 🏷️ Project Tags
 
 `pchat` `chat-app` `global-chat` `realtime-chat`  
@@ -80,7 +75,6 @@ Chats stay alive **only while both users are online** — once someone disconnec
 `react` `tailwindcss` `frontend` `fullstack`  
 `messaging-app` `public-chat` `private-chat` `live-chat`
 
----
 
 ### Clone Project & start local
 ```bash

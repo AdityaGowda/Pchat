@@ -13,13 +13,14 @@
 
 
 ## 🌐 About PChat  
-**PChat** is a real-time global chat platform where users can instantly talk to anyone who is online.  
-No friend requests.  
-No waiting for approvals.  
-Just **instant, temporary, real-time private messaging**.
+PChat is a **real-time** global chat platform where users can instantly connect with **anyone who is currently online**.  
+No **friend requests**, no **approvals** — just fast, direct, **one-to-one private messaging**.
 
-Chats stay alive **only while both users are online** — once someone disconnects, the private chat disappears automatically.
+The **online list** updates in real time, showing only users who are **active**.  
+If no users are online, the interface simply displays: **"No users are online."**
 
+Private chats exist only while **both users remain connected**. 
+The moment either user goes **offline**, the temporary chat **ends**, and the messages are automatically **cleared** & they are **vanished from the database**
 
 ## ⭐ Key Features
 

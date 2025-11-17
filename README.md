@@ -4,6 +4,7 @@
 ![Styling](https://img.shields.io/badge/Styling-TailwindCSS-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white)
 ![Backend](https://img.shields.io/badge/Backend-Firebase-orange?style=for-the-badge&logo=firebase&logoColor=white)
 ![Database](https://img.shields.io/badge/Database-Firestore%20%7C%20RealtimeDB-yellow?style=for-the-badge&logo=firebase)
+![Responsive](https://img.shields.io/badge/Responsive-Yes-brightgreen?style=for-the-badge)
 ![Status](https://img.shields.io/badge/Project-Ongoing-yellow?style=for-the-badge)
 
 ---
@@ -44,6 +45,10 @@ Chats stay alive **only while both users are online** — once someone disconnec
 ### ⚡ **Fast & Secure**
 - Uses Firebase Authentication for secure access
 - Firestore + Realtime DB for high-speed message sync
+  
+### 📱 Fully Responsive Design
+- Optimized for **mobile**, **tablet**, and **desktop**
+- Smooth UI and consistent layout across all screen sizes
 
 ---
 
